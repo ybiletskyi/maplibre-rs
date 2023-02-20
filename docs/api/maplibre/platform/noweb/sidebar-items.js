@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["run_multithreaded",""]],"mod":[["http_client",""],["schedule_method",""]]});
+window.SIDEBAR_ITEMS = {"fn":[["run_multithreaded",""]],"mod":[["http_client",""],["scheduler",""],["trace",""]],"struct":[["ReqwestOffscreenKernelEnvironment",""]]};

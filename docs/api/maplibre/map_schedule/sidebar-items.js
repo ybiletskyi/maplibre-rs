@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["EventuallyMapContext",""]],"struct":[["InteractiveMapSchedule","Stores the state of the map, dispatches tile fetching and caching, tessellation and drawing."],["PrematureMapContext",""]]});

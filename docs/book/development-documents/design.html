@@ -4,8 +4,10 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Design - MapLibre Rust Documentation</title>
+
+
         <!-- Custom HTML head -->
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
@@ -16,9 +18,11 @@
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
         <link rel="stylesheet" href="../css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="../fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="../highlight.css">
         <link rel="stylesheet" href="../tomorrow-night.css">
@@ -26,16 +30,18 @@
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../diff.css">
+
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
-        <script type="text/javascript">
+        <script>
             var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
                 var theme = localStorage.getItem('mdbook-theme');
                 var sidebar = localStorage.getItem('mdbook-sidebar');
@@ -51,7 +57,7 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
+        <script>
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
@@ -63,7 +69,7 @@
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
+        <script>
             var html = document.querySelector('html');
             var sidebar = 'hidden';
             if (document.body.clientWidth >= 1080) {
@@ -76,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="../supported-platforms.html">Supported Platforms</a></li><li class="chapter-item expanded affix "><a href="../developer-log.html">Developer Log</a></li><li class="chapter-item expanded "><a href="../user-guide/index.html"><strong aria-hidden="true">1.</strong> User Guide</a></li><li class="chapter-item expanded "><a href="../development-guide/index.html"><strong aria-hidden="true">2.</strong> Development Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../development-guide/how-to-run.html"><strong aria-hidden="true">2.1.</strong> How to Run Demos</a></li><li class="chapter-item expanded "><a href="../development-guide/building-libraries.html"><strong aria-hidden="true">2.2.</strong> Building Libraries</a></li><li class="chapter-item expanded "><a href="../development-guide/debugging.html"><strong aria-hidden="true">2.3.</strong> Debugging</a></li></ol></li><li class="chapter-item expanded "><a href="../development-documents/index.html"><strong aria-hidden="true">3.</strong> Development Documents</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../development-documents/architecture.html"><strong aria-hidden="true">3.1.</strong> Architecture</a></li><li class="chapter-item expanded "><a href="../development-documents/design.html" class="active"><strong aria-hidden="true">3.2.</strong> Design</a></li><li class="chapter-item expanded "><a href="../development-documents/caching.html"><strong aria-hidden="true">3.3.</strong> Caching</a></li><li class="chapter-item expanded "><a href="../development-documents/stencil-masking.html"><strong aria-hidden="true">3.4.</strong> Stencil Masking</a></li><li class="chapter-item expanded "><a href="../development-documents/font-rendering.html"><strong aria-hidden="true">3.5.</strong> Font Rendering</a></li><li class="chapter-item expanded "><a href="../development-documents/library-packaging.html"><strong aria-hidden="true">3.6.</strong> Library Packaging</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../development-documents/library-packaging/apple.html"><strong aria-hidden="true">3.6.1.</strong> Apple</a></li><li class="chapter-item expanded "><a href="../development-documents/library-packaging/android.html"><strong aria-hidden="true">3.6.2.</strong> Android</a></li><li class="chapter-item expanded "><a href="../development-documents/library-packaging/web.html"><strong aria-hidden="true">3.6.3.</strong> Web</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../appendix/index.html"><strong aria-hidden="true">4.</strong> Appendix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../appendix/link-collection.html"><strong aria-hidden="true">4.1.</strong> Link Collection</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="../supported-platforms.html">Supported Platforms</a></li><li class="chapter-item expanded affix "><a href="../developer-log.html">Developer Log</a></li><li class="chapter-item expanded "><a href="../user-guide/index.html"><strong aria-hidden="true">1.</strong> User Guide</a></li><li class="chapter-item expanded "><a href="../development-guide/index.html"><strong aria-hidden="true">2.</strong> Development Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../development-guide/how-to-run.html"><strong aria-hidden="true">2.1.</strong> How to Run Demos</a></li><li class="chapter-item expanded "><a href="../development-guide/building-libraries.html"><strong aria-hidden="true">2.2.</strong> Building Libraries</a></li><li class="chapter-item expanded "><a href="../development-guide/debugging.html"><strong aria-hidden="true">2.3.</strong> Debugging</a></li></ol></li><li class="chapter-item expanded "><a href="../development-documents/index.html"><strong aria-hidden="true">3.</strong> Development Documents</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../development-documents/architecture.html"><strong aria-hidden="true">3.1.</strong> Architecture</a></li><li class="chapter-item expanded "><a href="../development-documents/design.html" class="active"><strong aria-hidden="true">3.2.</strong> Design</a></li><li class="chapter-item expanded "><a href="../development-documents/caching.html"><strong aria-hidden="true">3.3.</strong> Caching</a></li><li class="chapter-item expanded "><a href="../development-documents/stencil-masking.html"><strong aria-hidden="true">3.4.</strong> Stencil Masking</a></li><li class="chapter-item expanded "><a href="../development-documents/font-rendering.html"><strong aria-hidden="true">3.5.</strong> Font Rendering</a></li><li class="chapter-item expanded "><a href="../development-documents/library-packaging.html"><strong aria-hidden="true">3.6.</strong> Library Packaging</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../development-documents/library-packaging/apple.html"><strong aria-hidden="true">3.6.1.</strong> Apple</a></li><li class="chapter-item expanded "><a href="../development-documents/library-packaging/android.html"><strong aria-hidden="true">3.6.2.</strong> Android</a></li><li class="chapter-item expanded "><a href="../development-documents/library-packaging/web.html"><strong aria-hidden="true">3.6.3.</strong> Web</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../appendix/index.html"><strong aria-hidden="true">4.</strong> Appendix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../appendix/link-collection.html"><strong aria-hidden="true">4.1.</strong> Link Collection</a></li></ol></li><li class="chapter-item expanded "><a href="../rfc/0001-rfc-process.html"><strong aria-hidden="true">5.</strong> RFCs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../rfc/0000-template.html"><strong aria-hidden="true">5.1.</strong> 0000-template</a></li><li class="chapter-item expanded "><a href="../rfc/0001-rfc-process.html"><strong aria-hidden="true">5.2.</strong> 0001-rfc-process</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -84,7 +90,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -94,7 +100,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -111,6 +117,7 @@
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -124,8 +131,9 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -163,9 +171,11 @@
                             <a rel="prev" href="../development-documents/architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
+
                             <a rel="next" href="../development-documents/caching.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
@@ -175,6 +185,7 @@
                     <a rel="prev" href="../development-documents/architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
+
                     <a rel="next" href="../development-documents/caching.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
@@ -182,16 +193,25 @@
 
         </div>
 
-        <script type="text/javascript">
+
+
+
+        <script>
             window.playground_copyable = true;
         </script>
-        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+
+
+    </div>
     </body>
 </html>

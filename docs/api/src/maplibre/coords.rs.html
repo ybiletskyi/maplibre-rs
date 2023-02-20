@@ -1,107 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `maplibre/src/coords.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>coords.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../maplibre/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../maplibre/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../maplibre/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `maplibre/src/coords.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>coords.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../maplibre/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../maplibre/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../maplibre/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -679,301 +674,473 @@
 <span id="674">674</span>
 <span id="675">675</span>
 <span id="676">676</span>
-</pre><pre class="rust"><code><span class="doccomment">//! Provides utilities related to coordinates.</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+<span id="698">698</span>
+<span id="699">699</span>
+<span id="700">700</span>
+<span id="701">701</span>
+<span id="702">702</span>
+<span id="703">703</span>
+<span id="704">704</span>
+<span id="705">705</span>
+<span id="706">706</span>
+<span id="707">707</span>
+<span id="708">708</span>
+<span id="709">709</span>
+<span id="710">710</span>
+<span id="711">711</span>
+<span id="712">712</span>
+<span id="713">713</span>
+<span id="714">714</span>
+<span id="715">715</span>
+<span id="716">716</span>
+<span id="717">717</span>
+<span id="718">718</span>
+<span id="719">719</span>
+<span id="720">720</span>
+<span id="721">721</span>
+<span id="722">722</span>
+<span id="723">723</span>
+<span id="724">724</span>
+<span id="725">725</span>
+<span id="726">726</span>
+<span id="727">727</span>
+<span id="728">728</span>
+<span id="729">729</span>
+<span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Provides utilities related to coordinates.
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::style::source::TileAddressingScheme</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util::math</span>::{<span class="ident">div_floor</span>, <span class="ident">Aabb2</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util::SignificantlyDifferent</span>;
-<span class="kw">use</span> <span class="ident">cgmath::num_traits::Pow</span>;
-<span class="kw">use</span> <span class="ident">cgmath</span>::{<span class="ident">AbsDiffEq</span>, <span class="ident">Matrix4</span>, <span class="ident">Point3</span>, <span class="ident">Vector3</span>};
-<span class="kw">use</span> <span class="ident">std::fmt</span>;
+</span><span class="kw">use </span>std::{
+    f64::consts::PI,
+    fmt,
+    fmt::{Display, Formatter},
+};
 
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EXTENT_UINT</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">4096</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EXTENT_SINT</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="ident">EXTENT_UINT</span> <span class="kw">as</span> <span class="ident">i32</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EXTENT</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="ident">EXTENT_UINT</span> <span class="kw">as</span> <span class="ident">f64</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TILE_SIZE</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">512.0</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_ZOOM</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
+<span class="kw">use </span>bytemuck_derive::{Pod, Zeroable};
+<span class="kw">use </span>cgmath::{AbsDiffEq, Matrix4, Point3, Vector3};
+<span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="comment">// FIXME: MAX_ZOOM is 32, which means max bound is 2^32, which wouldn&#39;t fit in u32 or i32</span>
-<span class="comment">// Bounds are generated 0..=31</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ZOOM_BOUNDS</span>: [<span class="ident">u32</span>; <span class="ident">MAX_ZOOM</span>] <span class="op">=</span> <span class="ident">create_zoom_bounds</span>::<span class="op">&lt;</span><span class="ident">MAX_ZOOM</span><span class="op">&gt;</span>();
+<span class="kw">use crate</span>::{
+    style::source::TileAddressingScheme,
+    util::{
+        math::{div_floor, Aabb2},
+        SignificantlyDifferent,
+    },
+};
 
-<span class="kw">const</span> <span class="kw">fn</span> <span class="ident">create_zoom_bounds</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">DIM</span>: <span class="ident">usize</span><span class="op">&gt;</span>() -&gt; [<span class="ident">u32</span>; <span class="ident">DIM</span>] {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span>: [<span class="ident">u32</span>; <span class="ident">DIM</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="ident">DIM</span>];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">DIM</span> {
-        <span class="ident">result</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">=</span> <span class="number">2u32</span>.<span class="ident">pow</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>);
-        <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+<span class="kw">pub const </span>EXTENT_UINT: u32 = <span class="number">4096</span>;
+<span class="kw">pub const </span>EXTENT_SINT: i32 = EXTENT_UINT <span class="kw">as </span>i32;
+<span class="kw">pub const </span>EXTENT: f64 = EXTENT_UINT <span class="kw">as </span>f64;
+<span class="kw">pub const </span>TILE_SIZE: f64 = <span class="number">512.0</span>;
+<span class="kw">pub const </span>MAX_ZOOM: usize = <span class="number">32</span>;
+
+<span class="comment">// FIXME: MAX_ZOOM is 32, which means max bound is 2^32, which wouldn&#39;t fit in u32 or i32
+// Bounds are generated 0..=31
+</span><span class="kw">pub const </span>ZOOM_BOUNDS: [u32; MAX_ZOOM] = create_zoom_bounds::&lt;MAX_ZOOM&gt;();
+
+<span class="kw">const fn </span>create_zoom_bounds&lt;<span class="kw">const </span>DIM: usize&gt;() -&gt; [u32; DIM] {
+    <span class="kw">let </span><span class="kw-2">mut </span>result: [u32; DIM] = [<span class="number">0</span>; DIM];
+    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+    <span class="kw">while </span>i &lt; DIM {
+        result[i] = <span class="number">2u32</span>.pow(i <span class="kw">as </span>u32);
+        i += <span class="number">1</span>;
     }
-    <span class="ident">result</span>
+    result
 }
 
-<span class="doccomment">/// Represents the position of a node within a quad tree. The first u8 defines the `ZoomLevel` of the node.</span>
-<span class="doccomment">/// The remaining bytes define which part (north west, south west, south east, north east) of each</span>
-<span class="doccomment">/// subdivision of the quadtree is concerned.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// TODO: We can optimize the quadkey and store the keys on 2 bits instead of 8</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Quadkey</span>([<span class="ident">ZoomLevel</span>; <span class="ident">MAX_ZOOM</span>]);
+<span class="doccomment">/// Represents the position of a node within a quad tree. The first u8 defines the `ZoomLevel` of the node.
+/// The remaining bytes define which part (north west, south west, south east, north east) of each
+/// subdivision of the quadtree is concerned.
+///
+/// TODO: We can optimize the quadkey and store the keys on 2 bits instead of 8
+</span><span class="attribute">#[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
+</span><span class="kw">pub struct </span>Quadkey([ZoomLevel; MAX_ZOOM]);
 
-<span class="kw">impl</span> <span class="ident">Quadkey</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">quad_encoded</span>: <span class="kw-2">&amp;</span>[<span class="ident">ZoomLevel</span>]) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key</span> <span class="op">=</span> [<span class="ident">ZoomLevel::default</span>(); <span class="ident">MAX_ZOOM</span>];
-        <span class="ident">key</span>[<span class="number">0</span>] <span class="op">=</span> (<span class="ident">quad_encoded</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u8</span>).<span class="ident">into</span>();
-        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">part</span>) <span class="kw">in</span> <span class="ident">quad_encoded</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="ident">key</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">=</span> <span class="kw-2">*</span><span class="ident">part</span>;
+<span class="kw">impl </span>Quadkey {
+    <span class="kw">pub fn </span>new(quad_encoded: <span class="kw-2">&amp;</span>[ZoomLevel]) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>key = [ZoomLevel::default(); MAX_ZOOM];
+        key[<span class="number">0</span>] = (quad_encoded.len() <span class="kw">as </span>u8).into();
+        <span class="kw">for </span>(i, part) <span class="kw">in </span>quad_encoded.iter().enumerate() {
+            key[i + <span class="number">1</span>] = <span class="kw-2">*</span>part;
         }
-        <span class="self">Self</span>(<span class="ident">key</span>)
+        <span class="self">Self</span>(key)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">Quadkey</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">ZoomLevel</span>(<span class="ident">level</span>) <span class="op">=</span> <span class="ident">key</span>[<span class="number">0</span>];
-        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">level</span> <span class="kw">as</span> <span class="ident">usize</span>;
-        <span class="kw">for</span> <span class="ident">part</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>..<span class="ident">len</span>] {
-            <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="ident">part</span>)<span class="question-mark">?</span>;
+<span class="kw">impl </span>fmt::Debug <span class="kw">for </span>Quadkey {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="kw">let </span>key = <span class="self">self</span>.<span class="number">0</span>;
+        <span class="kw">let </span>ZoomLevel(level) = key[<span class="number">0</span>];
+        <span class="kw">let </span>len = level <span class="kw">as </span>usize;
+        <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>..len] {
+            <span class="macro">write!</span>(f, <span class="string">&quot;{:?}&quot;</span>, part)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ZoomLevel</span>(<span class="ident">u8</span>);
+<span class="comment">// FIXME: does Pod and Zeroable make sense?
+</span><span class="attribute">#[derive(
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+    Hash,
+    Copy,
+    Clone,
+    Debug,
+    Default,
+    Serialize,
+    Deserialize,
+    Pod,
+    Zeroable,
+)]
+#[repr(C)]
+</span><span class="kw">pub struct </span>ZoomLevel(u8);
 
-<span class="kw">impl</span> <span class="ident">ZoomLevel</span> {
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">z</span>: <span class="ident">u8</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">ZoomLevel</span>(<span class="ident">z</span>)
+<span class="kw">impl </span>ZoomLevel {
+    <span class="kw">pub const fn </span>new(z: u8) -&gt; <span class="self">Self </span>{
+        ZoomLevel(z)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_root</span>(<span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="number">0</span> <span class="op">==</span> <span class="number">0</span>
+    <span class="kw">pub fn </span>is_root(<span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.<span class="number">0 </span>== <span class="number">0
+    </span>}
+}
+
+<span class="kw">impl </span>std::ops::Add&lt;u8&gt; <span class="kw">for </span>ZoomLevel {
+    <span class="kw">type </span>Output = ZoomLevel;
+
+    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: u8) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>zoom_level = <span class="self">self</span>.<span class="number">0</span>.checked_add(rhs).expect(<span class="string">&quot;zoom level overflowed&quot;</span>);
+        ZoomLevel(zoom_level)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ZoomLevel</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">ZoomLevel</span>(<span class="number">0</span>)
+<span class="kw">impl </span>std::ops::Sub&lt;u8&gt; <span class="kw">for </span>ZoomLevel {
+    <span class="kw">type </span>Output = ZoomLevel;
+
+    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: u8) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>zoom_level = <span class="self">self</span>.<span class="number">0</span>.checked_sub(rhs).expect(<span class="string">&quot;zoom level underflowed&quot;</span>);
+        ZoomLevel(zoom_level)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">std::ops::Add</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ZoomLevel</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">ZoomLevel</span>;
-
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">u8</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> <span class="ident">zoom_level</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">checked_add</span>(<span class="ident">rhs</span>).<span class="ident">unwrap</span>();
-        <span class="ident">ZoomLevel</span>(<span class="ident">zoom_level</span>)
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>ZoomLevel {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">std::ops::Sub</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ZoomLevel</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">ZoomLevel</span>;
-
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">u8</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> <span class="ident">zoom_level</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">checked_sub</span>(<span class="ident">rhs</span>).<span class="ident">unwrap</span>();
-        <span class="ident">ZoomLevel</span>(<span class="ident">zoom_level</span>)
+<span class="kw">impl </span>From&lt;u8&gt; <span class="kw">for </span>ZoomLevel {
+    <span class="kw">fn </span>from(zoom_level: u8) -&gt; <span class="self">Self </span>{
+        ZoomLevel(zoom_level)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">ZoomLevel</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
+<span class="kw">impl </span>From&lt;ZoomLevel&gt; <span class="kw">for </span>u8 {
+    <span class="kw">fn </span>from(val: ZoomLevel) -&gt; <span class="self">Self </span>{
+        val.<span class="number">0
+    </span>}
+}
+
+<span class="attribute">#[derive(Copy, Clone, Debug)]
+</span><span class="kw">pub struct </span>LatLon {
+    <span class="kw">pub </span>latitude: f64,
+    <span class="kw">pub </span>longitude: f64,
+}
+
+<span class="kw">impl </span>LatLon {
+    <span class="kw">pub fn </span>new(latitude: f64, longitude: f64) -&gt; <span class="self">Self </span>{
+        LatLon {
+            latitude,
+            longitude,
+        }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ZoomLevel</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">zoom_level</span>: <span class="ident">u8</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">ZoomLevel</span>(<span class="ident">zoom_level</span>)
+<span class="kw">impl </span>Default <span class="kw">for </span>LatLon {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        LatLon {
+            latitude: <span class="number">0.0</span>,
+            longitude: <span class="number">0.0</span>,
+        }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ZoomLevel</span> {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="self">self</span>) -&gt; <span class="ident">u8</span> {
-        <span class="self">self</span>.<span class="number">0</span>
+<span class="kw">impl </span>Display <span class="kw">for </span>LatLon {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{},{}&quot;</span>, <span class="self">self</span>.latitude, <span class="self">self</span>.longitude)
     }
 }
 
-<span class="doccomment">/// `Zoom` is an exponential scale that defines the zoom of the camera on the map.</span>
-<span class="doccomment">/// We can derive the `ZoomLevel` from `Zoom` by using the `[crate::coords::ZOOM_BOUNDS]`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Zoom</span>(<span class="ident">f64</span>);
+<span class="doccomment">/// `Zoom` is an exponential scale that defines the zoom of the camera on the map.
+/// We can derive the `ZoomLevel` from `Zoom` by using the `[crate::coords::ZOOM_BOUNDS]`.
+</span><span class="attribute">#[derive(Copy, Clone, Debug)]
+</span><span class="kw">pub struct </span>Zoom(f64);
 
-<span class="kw">impl</span> <span class="ident">Zoom</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">zoom</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Zoom</span>(<span class="ident">zoom</span>)
+<span class="kw">impl </span>Zoom {
+    <span class="kw">pub fn </span>new(zoom: f64) -&gt; <span class="self">Self </span>{
+        Zoom(zoom)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Zoom</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">zoom_level</span>: <span class="ident">ZoomLevel</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Zoom</span>(<span class="ident">zoom_level</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">f64</span>)
+<span class="kw">impl </span>Zoom {
+    <span class="kw">pub fn </span>from(zoom_level: ZoomLevel) -&gt; <span class="self">Self </span>{
+        Zoom(zoom_level.<span class="number">0 </span><span class="kw">as </span>f64)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Zoom</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">Zoom</span>(<span class="number">0.0</span>)
+<span class="kw">impl </span>Default <span class="kw">for </span>Zoom {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        Zoom(<span class="number">0.0</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Zoom</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, (<span class="self">self</span>.<span class="number">0</span> <span class="op">*</span> <span class="number">100.0</span>).<span class="ident">round</span>() <span class="op">/</span> <span class="number">100.0</span>)
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>Zoom {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, (<span class="self">self</span>.<span class="number">0 </span>* <span class="number">100.0</span>).round() / <span class="number">100.0</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">std::ops::Add</span> <span class="kw">for</span> <span class="ident">Zoom</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Zoom</span>;
+<span class="kw">impl </span>std::ops::Add <span class="kw">for </span>Zoom {
+    <span class="kw">type </span>Output = Zoom;
 
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">Zoom</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">+</span> <span class="ident">rhs</span>.<span class="number">0</span>)
+    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        Zoom(<span class="self">self</span>.<span class="number">0 </span>+ rhs.<span class="number">0</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">std::ops::Sub</span> <span class="kw">for</span> <span class="ident">Zoom</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Zoom</span>;
+<span class="kw">impl </span>std::ops::Sub <span class="kw">for </span>Zoom {
+    <span class="kw">type </span>Output = Zoom;
 
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">Zoom</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">-</span> <span class="ident">rhs</span>.<span class="number">0</span>)
+    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        Zoom(<span class="self">self</span>.<span class="number">0 </span>- rhs.<span class="number">0</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Zoom</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scale_to_tile</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">coords</span>: <span class="kw-2">&amp;</span><span class="ident">WorldTileCoords</span>) -&gt; <span class="ident">f64</span> {
-        <span class="number">2.0_f64</span>.<span class="ident">powf</span>(<span class="ident">coords</span>.<span class="ident">z</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>)
+<span class="kw">impl </span>Zoom {
+    <span class="kw">pub fn </span>scale_to_tile(<span class="kw-2">&amp;</span><span class="self">self</span>, coords: <span class="kw-2">&amp;</span>WorldTileCoords) -&gt; f64 {
+        <span class="number">2.0_f64</span>.powf(coords.z.<span class="number">0 </span><span class="kw">as </span>f64 - <span class="self">self</span>.<span class="number">0</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scale_to_zoom_level</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">z</span>: <span class="ident">ZoomLevel</span>) -&gt; <span class="ident">f64</span> {
-        <span class="number">2.0_f64</span>.<span class="ident">powf</span>(<span class="ident">z</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>)
+    <span class="kw">pub fn </span>scale_to_zoom_level(<span class="kw-2">&amp;</span><span class="self">self</span>, z: ZoomLevel) -&gt; f64 {
+        <span class="number">2.0_f64</span>.powf(z.<span class="number">0 </span><span class="kw">as </span>f64 - <span class="self">self</span>.<span class="number">0</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scale_delta</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">zoom</span>: <span class="kw-2">&amp;</span><span class="ident">Zoom</span>) -&gt; <span class="ident">f64</span> {
-        <span class="number">2.0_f64</span>.<span class="ident">powf</span>(<span class="ident">zoom</span>.<span class="number">0</span> <span class="op">-</span> <span class="self">self</span>.<span class="number">0</span>)
+    <span class="kw">pub fn </span>scale_delta(<span class="kw-2">&amp;</span><span class="self">self</span>, zoom: <span class="kw-2">&amp;</span>Zoom) -&gt; f64 {
+        <span class="number">2.0_f64</span>.powf(zoom.<span class="number">0 </span>- <span class="self">self</span>.<span class="number">0</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">level</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ZoomLevel</span> {
-        <span class="ident">ZoomLevel::from</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">floor</span>() <span class="kw">as</span> <span class="ident">u8</span>)
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">SignificantlyDifferent</span> <span class="kw">for</span> <span class="ident">Zoom</span> {
-    <span class="kw">type</span> <span class="ident">Epsilon</span> <span class="op">=</span> <span class="ident">f64</span>;
-
-    <span class="kw">fn</span> <span class="ident">ne</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">epsilon</span>: <span class="ident"><span class="self">Self</span>::Epsilon</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">abs_diff_eq</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="number">0</span>, <span class="ident">epsilon</span>)
+    <span class="kw">pub fn </span>level(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ZoomLevel {
+        ZoomLevel::from(<span class="self">self</span>.<span class="number">0</span>.floor() <span class="kw">as </span>u8)
     }
 }
 
-<span class="doccomment">/// Within each tile there is a separate coordinate system. Usually this coordinate system is</span>
-<span class="doccomment">/// within [`crate::coords::EXTENT`]. Therefore, `x` and `y` must be within the bounds of</span>
-<span class="doccomment">/// [`crate::coords::EXTENT`].</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Coordinate System Origin</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The origin is in the upper-left corner.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InnerCoords</span> {
-    <span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">f64</span>,
-    <span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">f64</span>,
+<span class="kw">impl </span>SignificantlyDifferent <span class="kw">for </span>Zoom {
+    <span class="kw">type </span>Epsilon = f64;
+
+    <span class="kw">fn </span>ne(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, epsilon: <span class="self">Self</span>::Epsilon) -&gt; bool {
+        <span class="self">self</span>.<span class="number">0</span>.abs_diff_eq(<span class="kw-2">&amp;</span>other.<span class="number">0</span>, epsilon)
+    }
 }
 
-<span class="doccomment">/// Every tile has tile coordinates. These tile coordinates are also called</span>
-<span class="doccomment">/// [Slippy map tilenames](https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Coordinate System Origin</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// For Web Mercator the origin of the coordinate system is in the upper-left corner.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TileCoords</span> {
-    <span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">u32</span>,
-    <span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">u32</span>,
-    <span class="kw">pub</span> <span class="ident">z</span>: <span class="ident">ZoomLevel</span>,
+<span class="doccomment">/// Within each tile there is a separate coordinate system. Usually this coordinate system is
+/// within [`crate::coords::EXTENT`]. Therefore, `x` and `y` must be within the bounds of
+/// [`crate::coords::EXTENT`].
+///
+/// # Coordinate System Origin
+///
+/// The origin is in the upper-left corner.
+</span><span class="attribute">#[derive(Clone, Copy, Debug, PartialEq, Default)]
+</span><span class="kw">pub struct </span>InnerCoords {
+    <span class="kw">pub </span>x: f64,
+    <span class="kw">pub </span>y: f64,
 }
 
-<span class="kw">impl</span> <span class="ident">TileCoords</span> {
-    <span class="doccomment">/// Transforms the tile coordinates as defined by the tile grid addressing scheme into a</span>
-    <span class="doccomment">/// representation which is used in the 3d-world.</span>
-    <span class="doccomment">/// This is not possible if the coordinates of this [`TileCoords`] exceed their bounds.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">/// The [`TileCoords`] `T(x=5,y=5,z=0)` exceeds its bounds because there is no tile</span>
-    <span class="doccomment">/// `x=5,y=5` at zoom level `z=0`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_world_tile</span>(<span class="self">self</span>, <span class="ident">scheme</span>: <span class="ident">TileAddressingScheme</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WorldTileCoords</span><span class="op">&gt;</span> {
-        <span class="comment">// FIXME: MAX_ZOOM is 32, which means max bound is 2^32, which wouldn&#39;t fit in u32 or i32</span>
-        <span class="comment">// Note that unlike WorldTileCoords, values are signed (no idea why)</span>
-        <span class="kw">let</span> <span class="ident">bounds</span> <span class="op">=</span> <span class="ident">ZOOM_BOUNDS</span>[<span class="self">self</span>.<span class="ident">z</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="kw">as</span> <span class="ident">i32</span>;
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>;
-        <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="ident">i32</span>;
+<span class="doccomment">/// Every tile has tile coordinates. These tile coordinates are also called
+/// [Slippy map tilenames](https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames).
+///
+/// # Coordinate System Origin
+///
+/// For Web Mercator the origin of the coordinate system is in the upper-left corner.
+</span><span class="attribute">#[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Default)]
+</span><span class="kw">pub struct </span>TileCoords {
+    <span class="kw">pub </span>x: u32,
+    <span class="kw">pub </span>y: u32,
+    <span class="kw">pub </span>z: ZoomLevel,
+}
 
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">bounds</span> <span class="op">|</span><span class="op">|</span> <span class="ident">y</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">bounds</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+<span class="kw">impl </span>TileCoords {
+    <span class="doccomment">/// Transforms the tile coordinates as defined by the tile grid addressing scheme into a
+    /// representation which is used in the 3d-world.
+    /// This is not possible if the coordinates of this [`TileCoords`] exceed their bounds.
+    ///
+    /// # Example
+    /// The [`TileCoords`] `T(x=5,y=5,z=0)` exceeds its bounds because there is no tile
+    /// `x=5,y=5` at zoom level `z=0`.
+    </span><span class="kw">pub fn </span>into_world_tile(<span class="self">self</span>, scheme: TileAddressingScheme) -&gt; <span class="prelude-ty">Option</span>&lt;WorldTileCoords&gt; {
+        <span class="comment">// FIXME: MAX_ZOOM is 32, which means max bound is 2^32, which wouldn&#39;t fit in u32 or i32
+        // Note that unlike WorldTileCoords, values are signed (no idea why)
+        </span><span class="kw">let </span>bounds = ZOOM_BOUNDS[<span class="self">self</span>.z.<span class="number">0 </span><span class="kw">as </span>usize] <span class="kw">as </span>i32;
+        <span class="kw">let </span>x = <span class="self">self</span>.x <span class="kw">as </span>i32;
+        <span class="kw">let </span>y = <span class="self">self</span>.y <span class="kw">as </span>i32;
+
+        <span class="kw">if </span>x &gt;= bounds || y &gt;= bounds {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
-        <span class="prelude-val">Some</span>(<span class="kw">match</span> <span class="ident">scheme</span> {
-            <span class="ident">TileAddressingScheme::XYZ</span> =&gt; <span class="ident">WorldTileCoords</span> { <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span> },
-            <span class="ident">TileAddressingScheme::TMS</span> =&gt; <span class="ident">WorldTileCoords</span> {
-                <span class="ident">x</span>,
-                <span class="ident">y</span>: <span class="ident">bounds</span> <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">y</span>,
-                <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span>,
+        <span class="prelude-val">Some</span>(<span class="kw">match </span>scheme {
+            TileAddressingScheme::XYZ =&gt; WorldTileCoords { x, y, z: <span class="self">self</span>.z },
+            TileAddressingScheme::TMS =&gt; WorldTileCoords {
+                x,
+                y: bounds - <span class="number">1 </span>- y,
+                z: <span class="self">self</span>.z,
             },
         })
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">ZoomLevel</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TileCoords</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">tuple</span>: (<span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">ZoomLevel</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">TileCoords</span> {
-            <span class="ident">x</span>: <span class="ident">tuple</span>.<span class="number">0</span>,
-            <span class="ident">y</span>: <span class="ident">tuple</span>.<span class="number">1</span>,
-            <span class="ident">z</span>: <span class="ident">tuple</span>.<span class="number">2</span>,
+<span class="kw">impl </span>From&lt;(u32, u32, ZoomLevel)&gt; <span class="kw">for </span>TileCoords {
+    <span class="kw">fn </span>from(tuple: (u32, u32, ZoomLevel)) -&gt; <span class="self">Self </span>{
+        TileCoords {
+            x: tuple.<span class="number">0</span>,
+            y: tuple.<span class="number">1</span>,
+            z: tuple.<span class="number">2</span>,
         }
     }
 }
 
-<span class="doccomment">/// Every tile has tile coordinates. Every tile coordinate can be mapped to a coordinate within</span>
-<span class="doccomment">/// the world. This provides the freedom to map from [TMS](https://wiki.openstreetmap.org/wiki/TMS)</span>
-<span class="doccomment">/// to [Slippy_map_tilenames](https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Coordinate System Origin</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The origin of the coordinate system is in the upper-left corner.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WorldTileCoords</span> {
-    <span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">i32</span>,
-    <span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">i32</span>,
-    <span class="kw">pub</span> <span class="ident">z</span>: <span class="ident">ZoomLevel</span>,
+<span class="doccomment">/// Every tile has tile coordinates. Every tile coordinate can be mapped to a coordinate within
+/// the world. This provides the freedom to map from [TMS](https://wiki.openstreetmap.org/wiki/TMS)
+/// to [Slippy_map_tilenames](https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames).
+///
+/// # Coordinate System Origin
+///
+/// The origin of the coordinate system is in the upper-left corner.
+</span><span class="comment">// FIXME: does Zeroable make sense?
+</span><span class="attribute">#[derive(
+    Clone,
+    Copy,
+    Debug,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Default,
+    Serialize,
+    Deserialize,
+    Zeroable,
+)]
+#[repr(C)]
+</span><span class="kw">pub struct </span>WorldTileCoords {
+    <span class="kw">pub </span>x: i32,
+    <span class="kw">pub </span>y: i32,
+    <span class="kw">pub </span>z: ZoomLevel,
 }
 
-<span class="kw">impl</span> <span class="ident">WorldTileCoords</span> {
-    <span class="doccomment">/// Returns the tile coords according to an addressing scheme. This is not possible if the</span>
-    <span class="doccomment">/// coordinates of this [`WorldTileCoords`] exceed their bounds.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The [`WorldTileCoords`] `WT(x=5,y=5,z=0)` exceeds its bounds because there is no tile</span>
-    <span class="doccomment">/// `x=5,y=5` at zoom level `z=0`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_tile</span>(<span class="self">self</span>, <span class="ident">scheme</span>: <span class="ident">TileAddressingScheme</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TileCoords</span><span class="op">&gt;</span> {
-        <span class="comment">// FIXME: MAX_ZOOM is 32, which means max bound is 2^32, which wouldn&#39;t fit in u32 or i32</span>
-        <span class="kw">let</span> <span class="ident">bounds</span> <span class="op">=</span> <span class="ident">ZOOM_BOUNDS</span>[<span class="self">self</span>.<span class="ident">z</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>];
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>;
-        <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="ident">u32</span>;
+<span class="kw">impl </span>WorldTileCoords {
+    <span class="doccomment">/// Returns the tile coords according to an addressing scheme. This is not possible if the
+    /// coordinates of this [`WorldTileCoords`] exceed their bounds.
+    ///
+    /// # Example
+    ///
+    /// The [`WorldTileCoords`] `WT(x=5,y=5,z=0)` exceeds its bounds because there is no tile
+    /// `x=5,y=5` at zoom level `z=0`.
+    </span><span class="kw">pub fn </span>into_tile(<span class="self">self</span>, scheme: TileAddressingScheme) -&gt; <span class="prelude-ty">Option</span>&lt;TileCoords&gt; {
+        <span class="comment">// FIXME: MAX_ZOOM is 32, which means max bound is 2^32, which wouldn&#39;t fit in u32 or i32
+        </span><span class="kw">let </span>bounds = ZOOM_BOUNDS[<span class="self">self</span>.z.<span class="number">0 </span><span class="kw">as </span>usize];
+        <span class="kw">let </span>x = <span class="self">self</span>.x <span class="kw">as </span>u32;
+        <span class="kw">let </span>y = <span class="self">self</span>.y <span class="kw">as </span>u32;
 
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">bounds</span> <span class="op">|</span><span class="op">|</span> <span class="ident">y</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">bounds</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+        <span class="kw">if </span>x &gt;= bounds || y &gt;= bounds {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
-        <span class="prelude-val">Some</span>(<span class="kw">match</span> <span class="ident">scheme</span> {
-            <span class="ident">TileAddressingScheme::XYZ</span> =&gt; <span class="ident">TileCoords</span> { <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span> },
-            <span class="ident">TileAddressingScheme::TMS</span> =&gt; <span class="ident">TileCoords</span> {
-                <span class="ident">x</span>,
-                <span class="ident">y</span>: <span class="ident">bounds</span> <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">y</span>,
-                <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span>,
+        <span class="prelude-val">Some</span>(<span class="kw">match </span>scheme {
+            TileAddressingScheme::XYZ =&gt; TileCoords { x, y, z: <span class="self">self</span>.z },
+            TileAddressingScheme::TMS =&gt; TileCoords {
+                x,
+                y: bounds - <span class="number">1 </span>- y,
+                z: <span class="self">self</span>.z,
             },
         })
     }
 
-    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">skip_all</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">transform_for_zoom</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">zoom</span>: <span class="ident">Zoom</span>) -&gt; <span class="ident">Matrix4</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
+    <span class="attribute">#[tracing::instrument(skip_all)]
+    </span><span class="kw">pub fn </span>transform_for_zoom(<span class="kw-2">&amp;</span><span class="self">self</span>, zoom: Zoom) -&gt; Matrix4&lt;f64&gt; {
         <span class="comment">/*
            For tile.z = zoom:
                =&gt; scale = 512
@@ -981,380 +1148,419 @@
                =&gt; scale &gt; 512
            If tile.z &gt; zoom:
                =&gt; scale &lt; 512
-        */</span>
-        <span class="kw">let</span> <span class="ident">tile_scale</span> <span class="op">=</span> <span class="ident">TILE_SIZE</span> <span class="op">*</span> <span class="ident">Zoom::from</span>(<span class="self">self</span>.<span class="ident">z</span>).<span class="ident">scale_delta</span>(<span class="kw-2">&amp;</span><span class="ident">zoom</span>);
+        */
+        </span><span class="kw">let </span>tile_scale = TILE_SIZE * Zoom::from(<span class="self">self</span>.z).scale_delta(<span class="kw-2">&amp;</span>zoom);
 
-        <span class="kw">let</span> <span class="ident">translate</span> <span class="op">=</span> <span class="ident">Matrix4::from_translation</span>(<span class="ident">Vector3::new</span>(
-            <span class="self">self</span>.<span class="ident">x</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="ident">tile_scale</span>,
-            <span class="self">self</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">*</span> <span class="ident">tile_scale</span>,
+        <span class="kw">let </span>translate = Matrix4::from_translation(Vector3::new(
+            <span class="self">self</span>.x <span class="kw">as </span>f64 * tile_scale,
+            <span class="self">self</span>.y <span class="kw">as </span>f64 * tile_scale,
             <span class="number">0.0</span>,
         ));
 
-        <span class="comment">// Divide by EXTENT to normalize tile</span>
-        <span class="comment">// Scale tiles where zoom level = self.z to 512x512</span>
-        <span class="kw">let</span> <span class="ident">normalize_and_scale</span> <span class="op">=</span>
-            <span class="ident">Matrix4::from_nonuniform_scale</span>(<span class="ident">tile_scale</span> <span class="op">/</span> <span class="ident">EXTENT</span>, <span class="ident">tile_scale</span> <span class="op">/</span> <span class="ident">EXTENT</span>, <span class="number">1.0</span>);
-        <span class="ident">translate</span> <span class="op">*</span> <span class="ident">normalize_and_scale</span>
+        <span class="comment">// Divide by EXTENT to normalize tile
+        // Scale tiles where zoom level = self.z to 512x512
+        </span><span class="kw">let </span>normalize_and_scale =
+            Matrix4::from_nonuniform_scale(tile_scale / EXTENT, tile_scale / EXTENT, <span class="number">1.0</span>);
+        translate * normalize_and_scale
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_aligned</span>(<span class="self">self</span>) -&gt; <span class="ident">AlignedWorldTileCoords</span> {
-        <span class="ident">AlignedWorldTileCoords</span>(<span class="ident">WorldTileCoords</span> {
-            <span class="ident">x</span>: <span class="ident">div_floor</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="number">2</span>) <span class="op">*</span> <span class="number">2</span>,
-            <span class="ident">y</span>: <span class="ident">div_floor</span>(<span class="self">self</span>.<span class="ident">y</span>, <span class="number">2</span>) <span class="op">*</span> <span class="number">2</span>,
-            <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span>,
+    <span class="kw">pub fn </span>into_aligned(<span class="self">self</span>) -&gt; AlignedWorldTileCoords {
+        AlignedWorldTileCoords(WorldTileCoords {
+            x: div_floor(<span class="self">self</span>.x, <span class="number">2</span>) * <span class="number">2</span>,
+            y: div_floor(<span class="self">self</span>.y, <span class="number">2</span>) * <span class="number">2</span>,
+            z: <span class="self">self</span>.z,
         })
     }
 
-    <span class="doccomment">/// Adopted from [tilebelt](https://github.com/mapbox/tilebelt)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_quad_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Quadkey</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">bounds</span> <span class="op">=</span> <span class="ident">ZOOM_BOUNDS</span>[<span class="self">self</span>.<span class="ident">z</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>];
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>;
-        <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="ident">u32</span>;
+    <span class="doccomment">/// Adopted from [tilebelt](https://github.com/mapbox/tilebelt)
+    </span><span class="kw">pub fn </span>build_quad_key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Quadkey&gt; {
+        <span class="kw">let </span>bounds = ZOOM_BOUNDS[<span class="self">self</span>.z.<span class="number">0 </span><span class="kw">as </span>usize];
+        <span class="kw">let </span>x = <span class="self">self</span>.x <span class="kw">as </span>u32;
+        <span class="kw">let </span>y = <span class="self">self</span>.y <span class="kw">as </span>u32;
 
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">bounds</span> <span class="op">|</span><span class="op">|</span> <span class="ident">y</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">bounds</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+        <span class="kw">if </span>x &gt;= bounds || y &gt;= bounds {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key</span> <span class="op">=</span> [<span class="ident">ZoomLevel::default</span>(); <span class="ident">MAX_ZOOM</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>key = [ZoomLevel::default(); MAX_ZOOM];
 
-        <span class="ident">key</span>[<span class="number">0</span>] <span class="op">=</span> <span class="self">self</span>.<span class="ident">z</span>;
+        key[<span class="number">0</span>] = <span class="self">self</span>.z;
 
-        <span class="kw">for</span> <span class="ident">z</span> <span class="kw">in</span> <span class="number">1</span>..<span class="self">self</span>.<span class="ident">z</span>.<span class="number">0</span> <span class="op">+</span> <span class="number">1</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="number">0</span>;
-            <span class="kw">let</span> <span class="ident">mask</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="ident">z</span> <span class="op">-</span> <span class="number">1</span>);
-            <span class="kw">if</span> (<span class="self">self</span>.<span class="ident">x</span> <span class="op">&amp;</span> <span class="ident">mask</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">b</span> <span class="op">+</span><span class="op">=</span> <span class="number">1u8</span>;
+        <span class="kw">for </span>z <span class="kw">in </span><span class="number">1</span>..<span class="self">self</span>.z.<span class="number">0 </span>+ <span class="number">1 </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>b = <span class="number">0</span>;
+            <span class="kw">let </span>mask: i32 = <span class="number">1 </span>&lt;&lt; (z - <span class="number">1</span>);
+            <span class="kw">if </span>(<span class="self">self</span>.x &amp; mask) != <span class="number">0 </span>{
+                b += <span class="number">1u8</span>;
             }
-            <span class="kw">if</span> (<span class="self">self</span>.<span class="ident">y</span> <span class="op">&amp;</span> <span class="ident">mask</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">b</span> <span class="op">+</span><span class="op">=</span> <span class="number">2u8</span>;
+            <span class="kw">if </span>(<span class="self">self</span>.y &amp; mask) != <span class="number">0 </span>{
+                b += <span class="number">2u8</span>;
             }
-            <span class="ident">key</span>[<span class="ident">z</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">=</span> <span class="ident">ZoomLevel::from</span>(<span class="ident">b</span>);
+            key[z <span class="kw">as </span>usize] = ZoomLevel::from(b);
         }
-        <span class="prelude-val">Some</span>(<span class="ident">Quadkey</span>(<span class="ident">key</span>))
+        <span class="prelude-val">Some</span>(Quadkey(key))
     }
 
-    <span class="doccomment">/// Adopted from [tilebelt](https://github.com/mapbox/tilebelt)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; [<span class="ident">WorldTileCoords</span>; <span class="number">4</span>] {
+    <span class="doccomment">/// Adopted from [tilebelt](https://github.com/mapbox/tilebelt)
+    </span><span class="kw">pub fn </span>get_children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; [WorldTileCoords; <span class="number">4</span>] {
         [
-            <span class="ident">WorldTileCoords</span> {
-                <span class="ident">x</span>: <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="number">2</span>,
-                <span class="ident">y</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="number">2</span>,
-                <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span> <span class="op">+</span> <span class="number">1</span>,
+            WorldTileCoords {
+                x: <span class="self">self</span>.x * <span class="number">2</span>,
+                y: <span class="self">self</span>.y * <span class="number">2</span>,
+                z: <span class="self">self</span>.z + <span class="number">1</span>,
             },
-            <span class="ident">WorldTileCoords</span> {
-                <span class="ident">x</span>: <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>,
-                <span class="ident">y</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="number">2</span>,
-                <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span> <span class="op">+</span> <span class="number">1</span>,
+            WorldTileCoords {
+                x: <span class="self">self</span>.x * <span class="number">2 </span>+ <span class="number">1</span>,
+                y: <span class="self">self</span>.y * <span class="number">2</span>,
+                z: <span class="self">self</span>.z + <span class="number">1</span>,
             },
-            <span class="ident">WorldTileCoords</span> {
-                <span class="ident">x</span>: <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>,
-                <span class="ident">y</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>,
-                <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span> <span class="op">+</span> <span class="number">1</span>,
+            WorldTileCoords {
+                x: <span class="self">self</span>.x * <span class="number">2 </span>+ <span class="number">1</span>,
+                y: <span class="self">self</span>.y * <span class="number">2 </span>+ <span class="number">1</span>,
+                z: <span class="self">self</span>.z + <span class="number">1</span>,
             },
-            <span class="ident">WorldTileCoords</span> {
-                <span class="ident">x</span>: <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="number">2</span>,
-                <span class="ident">y</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>,
-                <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span> <span class="op">+</span> <span class="number">1</span>,
+            WorldTileCoords {
+                x: <span class="self">self</span>.x * <span class="number">2</span>,
+                y: <span class="self">self</span>.y * <span class="number">2 </span>+ <span class="number">1</span>,
+                z: <span class="self">self</span>.z + <span class="number">1</span>,
             },
         ]
     }
 
-    <span class="doccomment">/// Get the tile which is one zoom level lower and contains this one</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_parent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WorldTileCoords</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">z</span>.<span class="ident">is_root</span>() {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+    <span class="doccomment">/// Get the tile which is one zoom level lower and contains this one
+    </span><span class="kw">pub fn </span>get_parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;WorldTileCoords&gt; {
+        <span class="kw">if </span><span class="self">self</span>.z.is_root() {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
-        <span class="prelude-val">Some</span>(<span class="ident">WorldTileCoords</span> {
-            <span class="ident">x</span>: <span class="self">self</span>.<span class="ident">x</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>,
-            <span class="ident">y</span>: <span class="self">self</span>.<span class="ident">y</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>,
-            <span class="ident">z</span>: <span class="self">self</span>.<span class="ident">z</span> <span class="op">-</span> <span class="number">1</span>,
+        <span class="prelude-val">Some</span>(WorldTileCoords {
+            x: <span class="self">self</span>.x &gt;&gt; <span class="number">1</span>,
+            y: <span class="self">self</span>.y &gt;&gt; <span class="number">1</span>,
+            z: <span class="self">self</span>.z - <span class="number">1</span>,
         })
     }
-}
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">ZoomLevel</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WorldTileCoords</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">tuple</span>: (<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">ZoomLevel</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">WorldTileCoords</span> {
-            <span class="ident">x</span>: <span class="ident">tuple</span>.<span class="number">0</span>,
-            <span class="ident">y</span>: <span class="ident">tuple</span>.<span class="number">1</span>,
-            <span class="ident">z</span>: <span class="ident">tuple</span>.<span class="number">2</span>,
+    <span class="doccomment">/// Returns unique stencil reference values for WorldTileCoords which are 3D.
+    /// Tiles from arbitrary `z` can lie next to each other, because we mix tiles from
+    /// different levels based on availability.
+    </span><span class="kw">pub fn </span>stencil_reference_value_3d(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u8 {
+        <span class="kw">const </span>CASES: u8 = <span class="number">4</span>;
+        <span class="kw">let </span>z = u8::from(<span class="self">self</span>.z);
+        <span class="kw">match </span>(<span class="self">self</span>.x % <span class="number">2 </span>== <span class="number">0</span>, <span class="self">self</span>.y % <span class="number">2 </span>== <span class="number">0</span>) {
+            (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; z * CASES,
+            (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; <span class="number">1 </span>+ z * CASES,
+            (<span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; <span class="number">2 </span>+ z * CASES,
+            (<span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; <span class="number">3 </span>+ z * CASES,
         }
     }
 }
 
-<span class="doccomment">/// An aligned world tile coordinate aligns a world coordinate at a 4x4 tile raster within the</span>
-<span class="doccomment">/// world. The aligned coordinates is defined by the coordinates of the upper left tile in the 4x4</span>
-<span class="doccomment">/// tile raster divided by 2 and rounding to the ceiling.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Coordinate System Origin</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The origin of the coordinate system is in the upper-left corner.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AlignedWorldTileCoords</span>(<span class="kw">pub</span> <span class="ident">WorldTileCoords</span>);
-
-<span class="kw">impl</span> <span class="ident">AlignedWorldTileCoords</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">upper_left</span>(<span class="self">self</span>) -&gt; <span class="ident">WorldTileCoords</span> {
-        <span class="self">self</span>.<span class="number">0</span>
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">upper_right</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WorldTileCoords</span> {
-        <span class="ident">WorldTileCoords</span> {
-            <span class="ident">x</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>,
-            <span class="ident">y</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">y</span>,
-            <span class="ident">z</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">z</span>,
-        }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lower_left</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WorldTileCoords</span> {
-        <span class="ident">WorldTileCoords</span> {
-            <span class="ident">x</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">x</span>,
-            <span class="ident">y</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">y</span> <span class="op">-</span> <span class="number">1</span>,
-            <span class="ident">z</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">z</span>,
-        }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lower_right</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">WorldTileCoords</span> {
-        <span class="ident">WorldTileCoords</span> {
-            <span class="ident">x</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>,
-            <span class="ident">y</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">y</span> <span class="op">+</span> <span class="number">1</span>,
-            <span class="ident">z</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">z</span>,
+<span class="kw">impl </span>From&lt;(i32, i32, ZoomLevel)&gt; <span class="kw">for </span>WorldTileCoords {
+    <span class="kw">fn </span>from(tuple: (i32, i32, ZoomLevel)) -&gt; <span class="self">Self </span>{
+        WorldTileCoords {
+            x: tuple.<span class="number">0</span>,
+            y: tuple.<span class="number">1</span>,
+            z: tuple.<span class="number">2</span>,
         }
     }
 }
 
-<span class="doccomment">/// Actual coordinates within the 3D world. The `z` value of the [`WorldCoors`] is not related to</span>
-<span class="doccomment">/// the `z` value of the [`WorldTileCoors`]. In the 3D world all tiles are rendered at `z` values</span>
-<span class="doccomment">/// which are determined only by the render engine and not by the zoom level.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Coordinate System Origin</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The origin of the coordinate system is in the upper-left corner.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WorldCoords</span> {
-    <span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">f64</span>,
-    <span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">f64</span>,
-}
+<span class="doccomment">/// An aligned world tile coordinate aligns a world coordinate at a 4x4 tile raster within the
+/// world. The aligned coordinates is defined by the coordinates of the upper left tile in the 4x4
+/// tile raster divided by 2 and rounding to the ceiling.
+///
+///
+/// # Coordinate System Origin
+///
+/// The origin of the coordinate system is in the upper-left corner.
+</span><span class="kw">pub struct </span>AlignedWorldTileCoords(<span class="kw">pub </span>WorldTileCoords);
 
-<span class="kw">fn</span> <span class="ident">tiles_with_z</span>(<span class="ident">z</span>: <span class="ident">u8</span>) -&gt; <span class="ident">f64</span> {
-    <span class="number">2.0</span>.<span class="ident">pow</span>(<span class="ident">z</span>)
-}
+<span class="kw">impl </span>AlignedWorldTileCoords {
+    <span class="kw">pub fn </span>upper_left(<span class="self">self</span>) -&gt; WorldTileCoords {
+        <span class="self">self</span>.<span class="number">0
+    </span>}
 
-<span class="kw">impl</span> <span class="ident">WorldCoords</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">at_ground</span>(<span class="ident">x</span>: <span class="ident">f64</span>, <span class="ident">y</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">x</span>, <span class="ident">y</span> }
+    <span class="kw">pub fn </span>upper_right(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WorldTileCoords {
+        WorldTileCoords {
+            x: <span class="self">self</span>.<span class="number">0</span>.x + <span class="number">1</span>,
+            y: <span class="self">self</span>.<span class="number">0</span>.y,
+            z: <span class="self">self</span>.<span class="number">0</span>.z,
+        }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_world_tile</span>(<span class="self">self</span>, <span class="ident">z</span>: <span class="ident">ZoomLevel</span>, <span class="ident">zoom</span>: <span class="ident">Zoom</span>) -&gt; <span class="ident">WorldTileCoords</span> {
-        <span class="kw">let</span> <span class="ident">tile_scale</span> <span class="op">=</span> <span class="ident">zoom</span>.<span class="ident">scale_to_zoom_level</span>(<span class="ident">z</span>) <span class="op">/</span> <span class="ident">TILE_SIZE</span>; <span class="comment">// TODO: Deduplicate</span>
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span> <span class="op">*</span> <span class="ident">tile_scale</span>;
-        <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="op">*</span> <span class="ident">tile_scale</span>;
+    <span class="kw">pub fn </span>lower_left(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WorldTileCoords {
+        WorldTileCoords {
+            x: <span class="self">self</span>.<span class="number">0</span>.x,
+            y: <span class="self">self</span>.<span class="number">0</span>.y - <span class="number">1</span>,
+            z: <span class="self">self</span>.<span class="number">0</span>.z,
+        }
+    }
 
-        <span class="ident">WorldTileCoords</span> {
-            <span class="ident">x</span>: <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>,
-            <span class="ident">y</span>: <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i32</span>,
-            <span class="ident">z</span>,
+    <span class="kw">pub fn </span>lower_right(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WorldTileCoords {
+        WorldTileCoords {
+            x: <span class="self">self</span>.<span class="number">0</span>.x + <span class="number">1</span>,
+            y: <span class="self">self</span>.<span class="number">0</span>.y + <span class="number">1</span>,
+            z: <span class="self">self</span>.<span class="number">0</span>.z,
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">f32</span>, <span class="ident">f32</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WorldCoords</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">tuple</span>: (<span class="ident">f32</span>, <span class="ident">f32</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">WorldCoords</span> {
-            <span class="ident">x</span>: <span class="ident">tuple</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">f64</span>,
-            <span class="ident">y</span>: <span class="ident">tuple</span>.<span class="number">1</span> <span class="kw">as</span> <span class="ident">f64</span>,
+<span class="doccomment">/// Actual coordinates within the 3D world. The `z` value of the [`WorldCoors`] is not related to
+/// the `z` value of the [`WorldTileCoors`]. In the 3D world all tiles are rendered at `z` values
+/// which are determined only by the render engine and not by the zoom level.
+///
+/// # Coordinate System Origin
+///
+/// The origin of the coordinate system is in the upper-left corner.
+</span><span class="attribute">#[derive(Clone, Copy, Debug, PartialEq, Default)]
+</span><span class="kw">pub struct </span>WorldCoords {
+    <span class="kw">pub </span>x: f64,
+    <span class="kw">pub </span>y: f64,
+}
+
+<span class="kw">impl </span>WorldCoords {
+    <span class="kw">pub fn </span>from_lat_lon(lat_lon: LatLon, zoom: Zoom) -&gt; WorldCoords {
+        <span class="kw">let </span>tile_size = TILE_SIZE * <span class="number">2.0_f64</span>.powf(zoom.<span class="number">0</span>);
+        <span class="comment">// Get x value
+        </span><span class="kw">let </span>x = (lat_lon.longitude + <span class="number">180.0</span>) * (tile_size / <span class="number">360.0</span>);
+
+        <span class="comment">// Convert from degrees to radians
+        </span><span class="kw">let </span>lat_rad = (lat_lon.latitude * PI) / <span class="number">180.0</span>;
+
+        <span class="comment">// get y value
+        </span><span class="kw">let </span>merc_n = f64::ln(f64::tan((PI / <span class="number">4.0</span>) + (lat_rad / <span class="number">2.0</span>)));
+        <span class="kw">let </span>y = (tile_size / <span class="number">2.0</span>) - (tile_size * merc_n / (<span class="number">2.0 </span>* PI));
+
+        WorldCoords { x, y }
+    }
+
+    <span class="kw">pub fn </span>at_ground(x: f64, y: f64) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ x, y }
+    }
+
+    <span class="kw">pub fn </span>into_world_tile(<span class="self">self</span>, z: ZoomLevel, zoom: Zoom) -&gt; WorldTileCoords {
+        <span class="kw">let </span>tile_scale = zoom.scale_to_zoom_level(z) / TILE_SIZE; <span class="comment">// TODO: Deduplicate
+        </span><span class="kw">let </span>x = <span class="self">self</span>.x * tile_scale;
+        <span class="kw">let </span>y = <span class="self">self</span>.y * tile_scale;
+
+        WorldTileCoords {
+            x: x <span class="kw">as </span>i32,
+            y: y <span class="kw">as </span>i32,
+            z,
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">f64</span>, <span class="ident">f64</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WorldCoords</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">tuple</span>: (<span class="ident">f64</span>, <span class="ident">f64</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">WorldCoords</span> {
-            <span class="ident">x</span>: <span class="ident">tuple</span>.<span class="number">0</span>,
-            <span class="ident">y</span>: <span class="ident">tuple</span>.<span class="number">1</span>,
+<span class="kw">impl </span>From&lt;(f32, f32)&gt; <span class="kw">for </span>WorldCoords {
+    <span class="kw">fn </span>from(tuple: (f32, f32)) -&gt; <span class="self">Self </span>{
+        WorldCoords {
+            x: tuple.<span class="number">0 </span><span class="kw">as </span>f64,
+            y: tuple.<span class="number">1 </span><span class="kw">as </span>f64,
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Point3</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WorldCoords</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">point</span>: <span class="ident">Point3</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">WorldCoords</span> {
-            <span class="ident">x</span>: <span class="ident">point</span>.<span class="ident">x</span>,
-            <span class="ident">y</span>: <span class="ident">point</span>.<span class="ident">y</span>,
+<span class="kw">impl </span>From&lt;(f64, f64)&gt; <span class="kw">for </span>WorldCoords {
+    <span class="kw">fn </span>from(tuple: (f64, f64)) -&gt; <span class="self">Self </span>{
+        WorldCoords {
+            x: tuple.<span class="number">0</span>,
+            y: tuple.<span class="number">1</span>,
         }
     }
 }
 
-<span class="doccomment">/// Defines a bounding box on a tiled map with a [`ZoomLevel`] and a padding.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ViewRegion</span> {
-    <span class="ident">min_tile</span>: <span class="ident">WorldTileCoords</span>,
-    <span class="ident">max_tile</span>: <span class="ident">WorldTileCoords</span>,
-    <span class="ident">z</span>: <span class="ident">ZoomLevel</span>,
-    <span class="ident">padding</span>: <span class="ident">i32</span>,
+<span class="kw">impl </span>From&lt;Point3&lt;f64&gt;&gt; <span class="kw">for </span>WorldCoords {
+    <span class="kw">fn </span>from(point: Point3&lt;f64&gt;) -&gt; <span class="self">Self </span>{
+        WorldCoords {
+            x: point.x,
+            y: point.y,
+        }
+    }
 }
 
-<span class="kw">impl</span> <span class="ident">ViewRegion</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">view_region</span>: <span class="ident">Aabb2</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>, <span class="ident">padding</span>: <span class="ident">i32</span>, <span class="ident">zoom</span>: <span class="ident">Zoom</span>, <span class="ident">z</span>: <span class="ident">ZoomLevel</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">min_world</span>: <span class="ident">WorldCoords</span> <span class="op">=</span> <span class="ident">WorldCoords::at_ground</span>(<span class="ident">view_region</span>.<span class="ident">min</span>.<span class="ident">x</span>, <span class="ident">view_region</span>.<span class="ident">min</span>.<span class="ident">y</span>);
-        <span class="kw">let</span> <span class="ident">min_world_tile</span>: <span class="ident">WorldTileCoords</span> <span class="op">=</span> <span class="ident">min_world</span>.<span class="ident">into_world_tile</span>(<span class="ident">z</span>, <span class="ident">zoom</span>);
-        <span class="kw">let</span> <span class="ident">max_world</span>: <span class="ident">WorldCoords</span> <span class="op">=</span> <span class="ident">WorldCoords::at_ground</span>(<span class="ident">view_region</span>.<span class="ident">max</span>.<span class="ident">x</span>, <span class="ident">view_region</span>.<span class="ident">max</span>.<span class="ident">y</span>);
-        <span class="kw">let</span> <span class="ident">max_world_tile</span>: <span class="ident">WorldTileCoords</span> <span class="op">=</span> <span class="ident">max_world</span>.<span class="ident">into_world_tile</span>(<span class="ident">z</span>, <span class="ident">zoom</span>);
+<span class="doccomment">/// Defines a bounding box on a tiled map with a [`ZoomLevel`] and a padding.
+</span><span class="attribute">#[derive(Debug)]
+</span><span class="kw">pub struct </span>ViewRegion {
+    min_tile: WorldTileCoords,
+    max_tile: WorldTileCoords,
+    <span class="doccomment">/// At which zoom level does this region exist
+    </span>zoom_level: ZoomLevel,
+    <span class="doccomment">/// Padding around this view region
+    </span>padding: i32,
+    <span class="doccomment">/// The maximum amount of tiles this view region contains
+    </span>max_n_tiles: usize,
+}
 
-        <span class="self">Self</span> {
-            <span class="ident">min_tile</span>: <span class="ident">min_world_tile</span>,
-            <span class="ident">max_tile</span>: <span class="ident">max_world_tile</span>,
-            <span class="ident">z</span>,
-            <span class="ident">padding</span>,
+<span class="kw">impl </span>ViewRegion {
+    <span class="kw">pub fn </span>new(
+        view_region: Aabb2&lt;f64&gt;,
+        padding: i32,
+        max_n_tiles: usize,
+        zoom: Zoom,
+        z: ZoomLevel,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>min_world: WorldCoords = WorldCoords::at_ground(view_region.min.x, view_region.min.y);
+        <span class="kw">let </span>min_world_tile: WorldTileCoords = min_world.into_world_tile(z, zoom);
+        <span class="kw">let </span>max_world: WorldCoords = WorldCoords::at_ground(view_region.max.x, view_region.max.y);
+        <span class="kw">let </span>max_world_tile: WorldTileCoords = max_world.into_world_tile(z, zoom);
+
+        <span class="self">Self </span>{
+            min_tile: min_world_tile,
+            max_tile: max_world_tile,
+            zoom_level: z,
+            max_n_tiles,
+            padding,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">zoom_level</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ZoomLevel</span> {
-        <span class="self">self</span>.<span class="ident">z</span>
+    <span class="kw">pub fn </span>zoom_level(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ZoomLevel {
+        <span class="self">self</span>.zoom_level
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_in_view</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">&amp;</span><span class="ident">world_coords</span>: <span class="kw-2">&amp;</span><span class="ident">WorldTileCoords</span>) -&gt; <span class="ident">bool</span> {
-        <span class="ident">world_coords</span>.<span class="ident">x</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">max_tile</span>.<span class="ident">x</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">padding</span>
-            <span class="op">&amp;&amp;</span> <span class="ident">world_coords</span>.<span class="ident">y</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">max_tile</span>.<span class="ident">y</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">padding</span>
-            <span class="op">&amp;&amp;</span> <span class="ident">world_coords</span>.<span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">min_tile</span>.<span class="ident">x</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">padding</span>
-            <span class="op">&amp;&amp;</span> <span class="ident">world_coords</span>.<span class="ident">y</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">min_tile</span>.<span class="ident">y</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">padding</span>
-            <span class="op">&amp;&amp;</span> <span class="ident">world_coords</span>.<span class="ident">z</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">z</span>
+    <span class="kw">pub fn </span>is_in_view(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">&amp;</span>world_coords: <span class="kw-2">&amp;</span>WorldTileCoords) -&gt; bool {
+        world_coords.x &lt;= <span class="self">self</span>.max_tile.x + <span class="self">self</span>.padding
+            &amp;&amp; world_coords.y &lt;= <span class="self">self</span>.max_tile.y + <span class="self">self</span>.padding
+            &amp;&amp; world_coords.x &gt;= <span class="self">self</span>.min_tile.x - <span class="self">self</span>.padding
+            &amp;&amp; world_coords.y &gt;= <span class="self">self</span>.min_tile.y - <span class="self">self</span>.padding
+            &amp;&amp; world_coords.z == <span class="self">self</span>.zoom_level
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">WorldTileCoords</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span> {
-        (<span class="self">self</span>.<span class="ident">min_tile</span>.<span class="ident">x</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">padding</span>..<span class="self">self</span>.<span class="ident">max_tile</span>.<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">padding</span>).<span class="ident">flat_map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">x</span><span class="op">|</span> {
-            (<span class="self">self</span>.<span class="ident">min_tile</span>.<span class="ident">y</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">padding</span>..<span class="self">self</span>.<span class="ident">max_tile</span>.<span class="ident">y</span> <span class="op">+</span> <span class="number">1</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">padding</span>).<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">y</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">tile_coord</span>: <span class="ident">WorldTileCoords</span> <span class="op">=</span> (<span class="ident">x</span>, <span class="ident">y</span>, <span class="self">self</span>.<span class="ident">z</span>).<span class="ident">into</span>();
-                <span class="ident">tile_coord</span>
+    <span class="kw">pub fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = WorldTileCoords&gt; + <span class="lifetime">&#39;_ </span>{
+        (<span class="self">self</span>.min_tile.x - <span class="self">self</span>.padding..<span class="self">self</span>.max_tile.x + <span class="number">1 </span>+ <span class="self">self</span>.padding)
+            .flat_map(<span class="kw">move </span>|x| {
+                (<span class="self">self</span>.min_tile.y - <span class="self">self</span>.padding..<span class="self">self</span>.max_tile.y + <span class="number">1 </span>+ <span class="self">self</span>.padding).map(<span class="kw">move </span>|y| {
+                    <span class="kw">let </span>tile_coord: WorldTileCoords = (x, y, <span class="self">self</span>.zoom_level).into();
+                    tile_coord
+                })
             })
-        })
+            .take(<span class="self">self</span>.max_n_tiles)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">TileCoords</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>TileCoords {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
         <span class="macro">write!</span>(
-            <span class="ident">f</span>,
+            f,
             <span class="string">&quot;T(x={x},y={y},z={z})&quot;</span>,
-            <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span>,
-            <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span>,
-            <span class="ident">z</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">z</span>
+            x = <span class="self">self</span>.x,
+            y = <span class="self">self</span>.y,
+            z = <span class="self">self</span>.z
         )
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">WorldTileCoords</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>WorldTileCoords {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
         <span class="macro">write!</span>(
-            <span class="ident">f</span>,
+            f,
             <span class="string">&quot;WT(x={x},y={y},z={z})&quot;</span>,
-            <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span>,
-            <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span>,
-            <span class="ident">z</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">z</span>
+            x = <span class="self">self</span>.x,
+            y = <span class="self">self</span>.y,
+            z = <span class="self">self</span>.z
         )
     }
 }
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">WorldCoords</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;W(x={x},y={y})&quot;</span>, <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span>,)
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>WorldCoords {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;W(x={x},y={y})&quot;</span>, x = <span class="self">self</span>.x, y = <span class="self">self</span>.y,)
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident">cgmath</span>::{<span class="ident">Point2</span>, <span class="ident">Vector4</span>};
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>cgmath::{Point2, Vector4};
 
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::style::source::TileAddressingScheme</span>;
-
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::coords</span>::{
-        <span class="ident">Quadkey</span>, <span class="ident">TileCoords</span>, <span class="ident">ViewRegion</span>, <span class="ident">WorldCoords</span>, <span class="ident">WorldTileCoords</span>, <span class="ident">Zoom</span>, <span class="ident">ZoomLevel</span>, <span class="ident">EXTENT</span>,
+    <span class="kw">use crate</span>::{
+        coords::{
+            Quadkey, TileCoords, ViewRegion, WorldCoords, WorldTileCoords, Zoom, ZoomLevel, EXTENT,
+        },
+        style::source::TileAddressingScheme,
+        util::math::Aabb2,
     };
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util::math::Aabb2</span>;
 
-    <span class="kw">const</span> <span class="ident">TOP_LEFT</span>: <span class="ident">Vector4</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vector4::new</span>(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>);
-    <span class="kw">const</span> <span class="ident">BOTTOM_RIGHT</span>: <span class="ident">Vector4</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vector4::new</span>(<span class="ident">EXTENT</span>, <span class="ident">EXTENT</span>, <span class="number">0.0</span>, <span class="number">1.0</span>);
+    <span class="kw">const </span>TOP_LEFT: Vector4&lt;f64&gt; = Vector4::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>);
+    <span class="kw">const </span>BOTTOM_RIGHT: Vector4&lt;f64&gt; = Vector4::new(EXTENT, EXTENT, <span class="number">0.0</span>, <span class="number">1.0</span>);
 
-    <span class="kw">fn</span> <span class="ident">to_from_world</span>(<span class="ident">tile</span>: (<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">ZoomLevel</span>), <span class="ident">zoom</span>: <span class="ident">Zoom</span>) {
-        <span class="kw">let</span> <span class="ident">tile</span> <span class="op">=</span> <span class="ident">WorldTileCoords::from</span>(<span class="ident">tile</span>);
-        <span class="kw">let</span> <span class="ident">p1</span> <span class="op">=</span> <span class="ident">tile</span>.<span class="ident">transform_for_zoom</span>(<span class="ident">zoom</span>) <span class="op">*</span> <span class="ident">TOP_LEFT</span>;
-        <span class="kw">let</span> <span class="ident">p2</span> <span class="op">=</span> <span class="ident">tile</span>.<span class="ident">transform_for_zoom</span>(<span class="ident">zoom</span>) <span class="op">*</span> <span class="ident">BOTTOM_RIGHT</span>;
-        <span class="macro">println!</span>(<span class="string">&quot;{:?}\n{:?}&quot;</span>, <span class="ident">p1</span>, <span class="ident">p2</span>);
+    <span class="kw">fn </span>to_from_world(tile: (i32, i32, ZoomLevel), zoom: Zoom) {
+        <span class="kw">let </span>tile = WorldTileCoords::from(tile);
+        <span class="kw">let </span>p1 = tile.transform_for_zoom(zoom) * TOP_LEFT;
+        <span class="kw">let </span>p2 = tile.transform_for_zoom(zoom) * BOTTOM_RIGHT;
+        <span class="macro">println!</span>(<span class="string">&quot;{:?}\n{:?}&quot;</span>, p1, p2);
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">WorldCoords::from</span>((<span class="ident">p1</span>.<span class="ident">x</span>, <span class="ident">p1</span>.<span class="ident">y</span>)).<span class="ident">into_world_tile</span>(<span class="ident">zoom</span>.<span class="ident">level</span>(), <span class="ident">zoom</span>),
-            <span class="ident">tile</span>
+            WorldCoords::from((p1.x, p1.y)).into_world_tile(zoom.level(), zoom),
+            tile
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">world_coords_tests</span>() {
-        <span class="ident">to_from_world</span>((<span class="number">1</span>, <span class="number">0</span>, <span class="ident">ZoomLevel::from</span>(<span class="number">1</span>)), <span class="ident">Zoom::new</span>(<span class="number">1.0</span>));
-        <span class="ident">to_from_world</span>((<span class="number">67</span>, <span class="number">42</span>, <span class="ident">ZoomLevel::from</span>(<span class="number">7</span>)), <span class="ident">Zoom::new</span>(<span class="number">7.0</span>));
-        <span class="ident">to_from_world</span>((<span class="number">17421</span>, <span class="number">11360</span>, <span class="ident">ZoomLevel::from</span>(<span class="number">15</span>)), <span class="ident">Zoom::new</span>(<span class="number">15.0</span>));
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>world_coords_tests() {
+        to_from_world((<span class="number">1</span>, <span class="number">0</span>, ZoomLevel::from(<span class="number">1</span>)), Zoom::new(<span class="number">1.0</span>));
+        to_from_world((<span class="number">67</span>, <span class="number">42</span>, ZoomLevel::from(<span class="number">7</span>)), Zoom::new(<span class="number">7.0</span>));
+        to_from_world((<span class="number">17421</span>, <span class="number">11360</span>, ZoomLevel::from(<span class="number">15</span>)), Zoom::new(<span class="number">15.0</span>));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_quad_key</span>() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_quad_key() {
         <span class="macro">assert_eq!</span>(
-            <span class="ident">TileCoords</span> {
-                <span class="ident">x</span>: <span class="number">0</span>,
-                <span class="ident">y</span>: <span class="number">0</span>,
-                <span class="ident">z</span>: <span class="ident">ZoomLevel::from</span>(<span class="number">1</span>)
+            TileCoords {
+                x: <span class="number">0</span>,
+                y: <span class="number">0</span>,
+                z: ZoomLevel::from(<span class="number">1</span>)
             }
-            .<span class="ident">into_world_tile</span>(<span class="ident">TileAddressingScheme::TMS</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">build_quad_key</span>(),
-            <span class="prelude-val">Some</span>(<span class="ident">Quadkey::new</span>(<span class="kw-2">&amp;</span>[<span class="ident">ZoomLevel::from</span>(<span class="number">2</span>)]))
+            .into_world_tile(TileAddressingScheme::TMS)
+            .unwrap()
+            .build_quad_key(),
+            <span class="prelude-val">Some</span>(Quadkey::new(<span class="kw-2">&amp;</span>[ZoomLevel::from(<span class="number">2</span>)]))
         );
         <span class="macro">assert_eq!</span>(
-            <span class="ident">TileCoords</span> {
-                <span class="ident">x</span>: <span class="number">0</span>,
-                <span class="ident">y</span>: <span class="number">1</span>,
-                <span class="ident">z</span>: <span class="ident">ZoomLevel::from</span>(<span class="number">1</span>)
+            TileCoords {
+                x: <span class="number">0</span>,
+                y: <span class="number">1</span>,
+                z: ZoomLevel::from(<span class="number">1</span>)
             }
-            .<span class="ident">into_world_tile</span>(<span class="ident">TileAddressingScheme::TMS</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">build_quad_key</span>(),
-            <span class="prelude-val">Some</span>(<span class="ident">Quadkey::new</span>(<span class="kw-2">&amp;</span>[<span class="ident">ZoomLevel::from</span>(<span class="number">0</span>)]))
+            .into_world_tile(TileAddressingScheme::TMS)
+            .unwrap()
+            .build_quad_key(),
+            <span class="prelude-val">Some</span>(Quadkey::new(<span class="kw-2">&amp;</span>[ZoomLevel::from(<span class="number">0</span>)]))
         );
         <span class="macro">assert_eq!</span>(
-            <span class="ident">TileCoords</span> {
-                <span class="ident">x</span>: <span class="number">1</span>,
-                <span class="ident">y</span>: <span class="number">1</span>,
-                <span class="ident">z</span>: <span class="ident">ZoomLevel::from</span>(<span class="number">1</span>)
+            TileCoords {
+                x: <span class="number">1</span>,
+                y: <span class="number">1</span>,
+                z: ZoomLevel::from(<span class="number">1</span>)
             }
-            .<span class="ident">into_world_tile</span>(<span class="ident">TileAddressingScheme::TMS</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">build_quad_key</span>(),
-            <span class="prelude-val">Some</span>(<span class="ident">Quadkey::new</span>(<span class="kw-2">&amp;</span>[<span class="ident">ZoomLevel::from</span>(<span class="number">1</span>)]))
+            .into_world_tile(TileAddressingScheme::TMS)
+            .unwrap()
+            .build_quad_key(),
+            <span class="prelude-val">Some</span>(Quadkey::new(<span class="kw-2">&amp;</span>[ZoomLevel::from(<span class="number">1</span>)]))
         );
         <span class="macro">assert_eq!</span>(
-            <span class="ident">TileCoords</span> {
-                <span class="ident">x</span>: <span class="number">1</span>,
-                <span class="ident">y</span>: <span class="number">0</span>,
-                <span class="ident">z</span>: <span class="ident">ZoomLevel::from</span>(<span class="number">1</span>)
+            TileCoords {
+                x: <span class="number">1</span>,
+                y: <span class="number">0</span>,
+                z: ZoomLevel::from(<span class="number">1</span>)
             }
-            .<span class="ident">into_world_tile</span>(<span class="ident">TileAddressingScheme::TMS</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">build_quad_key</span>(),
-            <span class="prelude-val">Some</span>(<span class="ident">Quadkey::new</span>(<span class="kw-2">&amp;</span>[<span class="ident">ZoomLevel::from</span>(<span class="number">3</span>)]))
+            .into_world_tile(TileAddressingScheme::TMS)
+            .unwrap()
+            .build_quad_key(),
+            <span class="prelude-val">Some</span>(Quadkey::new(<span class="kw-2">&amp;</span>[ZoomLevel::from(<span class="number">3</span>)]))
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_view_region</span>() {
-        <span class="kw">for</span> <span class="ident">tile_coords</span> <span class="kw">in</span> <span class="ident">ViewRegion::new</span>(
-            <span class="ident">Aabb2::new</span>(<span class="ident">Point2::new</span>(<span class="number">0.0</span>, <span class="number">0.0</span>), <span class="ident">Point2::new</span>(<span class="number">2000.0</span>, <span class="number">2000.0</span>)),
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_view_region() {
+        <span class="kw">for </span>tile_coords <span class="kw">in </span>ViewRegion::new(
+            Aabb2::new(Point2::new(<span class="number">0.0</span>, <span class="number">0.0</span>), Point2::new(<span class="number">2000.0</span>, <span class="number">2000.0</span>)),
             <span class="number">1</span>,
-            <span class="ident">Zoom::default</span>(),
-            <span class="ident">ZoomLevel::default</span>(),
+            <span class="number">32</span>,
+            Zoom::default(),
+            ZoomLevel::default(),
         )
-        .<span class="ident">iter</span>()
+        .iter()
         {
-            <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">tile_coords</span>);
+            <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, tile_coords);
         }
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="maplibre" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="maplibre" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
